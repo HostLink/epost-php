@@ -1,6 +1,8 @@
 # epost-php
 
 ## Usage
+
+### SMS
 ```php
 use EPost\SMS;
 
