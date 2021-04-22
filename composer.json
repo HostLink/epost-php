@@ -1,0 +1,15 @@
+{
+    "name": "hostlink/epost-php",
+    "description": "A library for e-post",
+    "type": "library",
+    "require": {
+        "mathsgod/gql-client": "^2.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Raymond Chong",
+            "email": "raymond@hostlink.com.hk"
+        }
+    ]
+}
