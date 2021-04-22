@@ -3,20 +3,23 @@
 use EPost\SMS;
 use GQL\Client;
 
+/**
+ * @property GQL\Client $client
+ */
 class EPost
 {
 
-
-    public Client $client;
+    public $client;
 
     public function __construct(string $key)
     {
         $this->key = $key;
 
-        $this->client = new Client("https://api.e-post.com.hk/v4?token=$key", [], ["verify" => false]);
+        $this->client = new Client("https://api.e-post.com.hk/v4/", ["verify" => false]);
+        $this->client->token = $key;
     }
 
-    public function sendSMS(SMS $sms)
+    public function sendSMS(SMS $sms): int
     {
         $resp = $this->client->subscription("sendSMS", [
             "phone" => $sms->phone,
@@ -27,6 +30,6 @@ class EPost
             throw new Exception($resp["error"]["message"]);
         }
 
-        return $resp["data"]["sendSMS"];
+        return $resp["data"]["sendSMS"][0];
     }
 }
