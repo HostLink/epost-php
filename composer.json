@@ -3,6 +3,7 @@
     "description": "A library for e-post",
     "type": "library",
     "require": {
+        "php": ">=7.3",
         "mathsgod/gql-client": "^2.0"
     },
     "license": "MIT",
@@ -11,5 +12,13 @@
             "name": "Raymond Chong",
             "email": "raymond@hostlink.com.hk"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "EPost\\": "src/"
+        },
+        "classmap": [
+            "src/EPost.php"
+        ]
+    }
 }
