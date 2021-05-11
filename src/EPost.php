@@ -50,7 +50,8 @@ class EPost
                     "content",
                     "send_time",
                     "no_of_msg",
-                    "receive_time"
+                    "receive_status",
+                    "receive_time",
                 ]
             ]
         ]);
