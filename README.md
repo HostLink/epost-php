@@ -24,7 +24,7 @@ $to="2021-05-15";
 $report = $epost->getSMSReport($from,$to);
 ```
 
-### get Quota
+### get quota and expiry date
 ```php
 $epost = new EPost($key);
 echo $epost->getSMSQuota();
