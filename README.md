@@ -19,5 +19,7 @@ print_r($epost->sendSMS($sms));
 ### get SMS report
 ```php
 $sms = new SMS();
-$report = $epost->getSMSReport("2021-05-10", "2021-05-15");
+$from="2021-05-10";
+$to="2021-05-15";
+$report = $epost->getSMSReport($from,$to);
 ```
