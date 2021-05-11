@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(~E_WARNING & ~E_NOTICE);
 use EPost\SMS;
 use GQL\Client;
 
@@ -17,6 +17,29 @@ class EPost
 
         $this->client = new Client("https://api.e-post.com.hk/v4/", ["verify" => false]);
         $this->client->token = $key;
+    }
+
+    public function getSMSExpiryDate(){
+        $resp = $this->client->query([
+            "me" => [
+                "SMSQuota" => [
+                    "expiry_date"
+                ]
+            ]
+        ]);
+        return $resp["data"]["me"]["SMSQuota"]["expiry_date"];
+    }
+
+    public function getSMSQuota(): int
+    {
+        $resp = $this->client->query([
+            "me" => [
+                "SMSQuota" => [
+                    "quota"
+                ]
+            ]
+        ]);
+        return $resp["data"]["me"]["SMSQuota"]["quota"];
     }
 
     public function sendSMS(SMS $sms): int
@@ -50,6 +73,7 @@ class EPost
                     "content",
                     "send_time",
                     "no_of_msg",
+                    "status",
                     "receive_status",
                     "receive_time",
                 ]
