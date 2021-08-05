@@ -1,5 +1,6 @@
 <?php
 error_reporting(~E_WARNING & ~E_NOTICE);
+
 use EPost\SMS;
 use GQL\Client;
 
@@ -19,7 +20,8 @@ class EPost
         $this->client->token = $key;
     }
 
-    public function getSMSExpiryDate(){
+    public function getSMSExpiryDate()
+    {
         $resp = $this->client->query([
             "me" => [
                 "SMSQuota" => [
@@ -46,7 +48,8 @@ class EPost
     {
         $resp = $this->client->subscription("sendSMS", [
             "phone" => $sms->phone,
-            "content" => $sms->content
+            "content" => $sms->content,
+            "country_code" => $sms->country_code
         ]);
 
         if ($resp["error"]) {
