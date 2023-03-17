@@ -11,6 +11,7 @@ class EPost
 {
 
     public $client;
+    public $key;
 
     public function __construct(string $key)
     {
