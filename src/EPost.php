@@ -2,6 +2,7 @@
 error_reporting(~E_WARNING & ~E_NOTICE);
 
 use EPost\SMS;
+use GQL\Builder;
 use GQL\Client;
 
 /**
@@ -48,9 +49,11 @@ class EPost
     public function sendSMS(SMS $sms): int
     {
         $resp = $this->client->subscription("sendSMS", [
-            "phone" => $sms->phone,
-            "content" => $sms->content,
-            "country_code" => $sms->country_code
+            "__args" => [
+                "phone" => $sms->phone,
+                "content" => $sms->content,
+                "country_code" => $sms->country_code
+            ]
         ]);
 
         if ($resp["error"]) {
