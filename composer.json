@@ -3,7 +3,7 @@
     "description": "A library for e-post",
     "type": "library",
     "require": {
-        "php": ">=7.3",
+        "php": "^8.0",
         "mathsgod/gql-client": "^2.1"
     },
     "license": "MIT",
