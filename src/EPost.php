@@ -81,17 +81,27 @@ class EPost
                     ],
                 ],
                 "data" => [
-                    "sms_id"         => true,
-                    "phone"          => true,
-                    "content"        => true,
-                    "send_time"      => true,
-                    "no_of_msg"      => true,
-                    "receive_time"   => true,
-                    "receive_status" => true,
+                    "sms_id"       => true,
+                    "phone"        => true,
+                    "content"      => true,
+                    "send_time"    => true,
+                    "no_of_msg"    => true,
+                    "receive_time" => true,
+                    "result"       => true,
                 ],
             ],
         ]);
 
-        return $resp["data"]["listSMS"]["data"] ?? [];
+        $rows = $resp["data"]["listSMS"]["data"] ?? [];
+        foreach ($rows as &$row) {
+            $result = $row["result"] ?? "";
+            if (is_numeric($result)) {
+                $row["status"] = "Sent";
+            } else {
+                $row["status"] = ucwords(str_replace("_", " ", $result));
+            }
+            unset($row["result"]);
+        }
+        return $rows;
     }
 }
