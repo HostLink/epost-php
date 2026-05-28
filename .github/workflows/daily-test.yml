@@ -1,0 +1,56 @@
+name: Daily API Test
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Every day at 10:00 HKT (02:00 UTC)
+  workflow_dispatch:      # Allow manual trigger
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          extensions: curl
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Test getSMSQuota and getSMSExpiryDate
+        env:
+          EPOST_TOKEN: ${{ secrets.EPOST_TOKEN }}
+        run: |
+          php -r "
+          require 'vendor/autoload.php';
+
+          \$token = getenv('EPOST_TOKEN');
+          if (!trim(\$token)) {
+              echo 'ERROR: EPOST_TOKEN secret is not set' . PHP_EOL;
+              exit(1);
+          }
+
+          \$epost = new EPost(\$token);
+
+          // Test getSMSQuota
+          \$quota = \$epost->getSMSQuota();
+          echo 'getSMSQuota: ' . \$quota . PHP_EOL;
+          if (!\$quota && \$quota !== 0) {
+              echo 'ERROR: getSMSQuota returned unexpected value' . PHP_EOL;
+              exit(1);
+          }
+
+          // Test getSMSExpiryDate
+          \$expiry = \$epost->getSMSExpiryDate();
+          echo 'getSMSExpiryDate: ' . \$expiry . PHP_EOL;
+          if (\$expiry !== null && !preg_match('/^\d{4}-\d{2}-\d{2}$/', \$expiry)) {
+              echo 'ERROR: getSMSExpiryDate returned unexpected format' . PHP_EOL;
+              exit(1);
+          }
+
+          echo 'All tests passed!' . PHP_EOL;
+          "
