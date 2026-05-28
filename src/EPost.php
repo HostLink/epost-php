@@ -37,17 +37,17 @@ class EPost
     public function getSMSExpiryDate(): ?string
     {
         $resp = $this->request("query", [
-            "getMySMSQuota" => ["expiry_date" => true],
+            "mySMSQuota" => ["expiry_date" => true],
         ]);
-        return $resp["data"]["getMySMSQuota"]["expiry_date"] ?? null;
+        return $resp["data"]["mySMSQuota"]["expiry_date"] ?? null;
     }
 
     public function getSMSQuota(): int
     {
         $resp = $this->request("query", [
-            "getMySMSQuota" => ["quota" => true],
+            "mySMSQuota" => ["quota" => true],
         ]);
-        return (int)($resp["data"]["getMySMSQuota"]["quota"] ?? 0);
+        return (int)($resp["data"]["mySMSQuota"]["quota"] ?? 0);
     }
 
     public function sendSMS(SMS $sms): int
