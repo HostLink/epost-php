@@ -80,7 +80,7 @@ class EPost
                         ],
                     ],
                 ],
-                "list" => [
+                "data" => [
                     "sms_id"         => true,
                     "phone"          => true,
                     "content"        => true,
@@ -92,6 +92,6 @@ class EPost
             ],
         ]);
 
-        return $resp["data"]["listSMS"]["list"] ?? [];
+        return $resp["data"]["listSMS"]["data"] ?? [];
     }
 }
