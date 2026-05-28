@@ -1,92 +1,97 @@
 <?php
-error_reporting(~E_WARNING & ~E_NOTICE);
 
 use EPost\SMS;
-use GQL\Builder;
-use GQL\Client;
 
-/**
- * @property GQL\Client $client
- */
 class EPost
 {
+    private string $key;
+    private string $endpoint;
 
-    public $client;
-    public $key;
-
-    public function __construct(string $key)
+    public function __construct(string $key, string $endpoint = "https://app.e-post.com.hk/api/")
     {
         $this->key = $key;
-
-        $this->client = new Client("https://api.e-post.com.hk/v4/", ["verify" => false]);
-        $this->client->token = $key;
+        $this->endpoint = $endpoint;
     }
 
-    public function getSMSExpiryDate()
+    private function request(string $type, array $body): array
     {
-        $resp = $this->client->query([
-            "me" => [
-                "SMSQuota" => [
-                    "expiry_date"
-                ]
-            ]
+        $gql = $type . ' { ' . array_to_gql($body) . ' }';
+
+        $ch = curl_init($this->endpoint);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode(["query" => $gql]),
+            CURLOPT_HTTPHEADER     => [
+                "Content-Type: application/json",
+                "Accept: application/json",
+                "Authorization: Bearer {$this->key}",
+            ],
         ]);
-        return $resp["data"]["me"]["SMSQuota"]["expiry_date"];
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response, true) ?? [];
+    }
+
+    public function getSMSExpiryDate(): ?string
+    {
+        $resp = $this->request("query", [
+            "getMySMSQuota" => ["expiry_date" => true],
+        ]);
+        return $resp["data"]["getMySMSQuota"]["expiry_date"] ?? null;
     }
 
     public function getSMSQuota(): int
     {
-        $resp = $this->client->query([
-            "me" => [
-                "SMSQuota" => [
-                    "quota"
-                ]
-            ]
+        $resp = $this->request("query", [
+            "getMySMSQuota" => ["quota" => true],
         ]);
-        return $resp["data"]["me"]["SMSQuota"]["quota"];
+        return (int)($resp["data"]["getMySMSQuota"]["quota"] ?? 0);
     }
 
     public function sendSMS(SMS $sms): int
     {
-        $resp = $this->client->subscription("sendSMS", [
-            "__args" => [
-                "phone" => $sms->phone,
-                "content" => $sms->content,
-                "country_code" => $sms->country_code
-            ]
+        $phone = '+' . $sms->country_code . $sms->phone;
+        $resp = $this->request("mutation", [
+            "sendSMS" => [
+                "__args" => [
+                    "phone"   => $phone,
+                    "content" => $sms->content,
+                ],
+            ],
         ]);
 
-        if ($resp["error"]) {
-            throw new Exception($resp["error"]["message"]);
+        if (!empty($resp["errors"])) {
+            throw new \Exception($resp["errors"][0]["message"]);
         }
 
-        return $resp["data"]["sendSMS"][0];
+        return (int)$resp["data"]["sendSMS"];
     }
 
-    public function getSMSReport(string $start, string $end)
+    public function getSMSReport(string $start, string $end): array
     {
-        $resp = $this->client->query([
-            "SMS" => [
+        $resp = $this->request("query", [
+            "listSMS" => [
                 "__args" => [
-                    "filter" => [
+                    "filters" => [
                         "created_time" => [
-                            "between" => [$start . " 00:00:00", $end . " 23:59:59"]
-                        ]
-                    ]
+                            "between" => [$start . " 00:00:00", $end . " 23:59:59"],
+                        ],
+                    ],
                 ],
                 "list" => [
-                    "sms_id",
-                    "phone",
-                    "content",
-                    "send_time",
-                    "no_of_msg",
-                    "status",
-                    "receive_status",
-                    "receive_time",
-                ]
-            ]
+                    "sms_id"         => true,
+                    "phone"          => true,
+                    "content"        => true,
+                    "created_time"   => true,
+                    "no_of_msg"      => true,
+                    "receive_status" => true,
+                    "receive_time"   => true,
+                ],
+            ],
         ]);
 
-        return $resp["data"]["SMS"]["list"];
+        return $resp["data"]["listSMS"]["list"] ?? [];
     }
 }
