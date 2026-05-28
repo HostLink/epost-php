@@ -4,8 +4,8 @@ use EPost\SMS;
 
 class EPost
 {
-    private string $key;
-    private string $endpoint;
+    private $key;
+    private $endpoint;
 
     public function __construct(string $key, string $endpoint = "https://app.e-post.com.hk/api/")
     {

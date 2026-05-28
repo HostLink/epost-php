@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f5418c4532cdfbb49218443cea51f5a4",
+    "content-hash": "7311d81ff202e49beb702821ec0919d0",
     "packages": [
         {
             "name": "mathsgod/array_to_gql",
@@ -67,7 +67,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0"
+        "php": ">=7.0"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
