@@ -104,4 +104,46 @@ class EPost
         }
         return $rows;
     }
+
+    public function getSMSReportFilter(string $start, string $end, string $phone = "", string $content = ""): array
+    {
+        $filters = [
+            "created_time" => [
+                "between" => [$start . " 00:00:00", $end . " 23:59:59"],
+            ],
+        ];
+        if ($phone !== "") {
+            $filters["phone"] = ["like" => "%" . $phone . "%"];
+        }
+        if ($content !== "") {
+            $filters["content"] = ["like" => "%" . $content . "%"];
+        }
+
+        $resp = $this->request("query", [
+            "listSMS" => [
+                "__args" => ["filters" => $filters],
+                "data" => [
+                    "sms_id"       => true,
+                    "phone"        => true,
+                    "content"      => true,
+                    "send_time"    => true,
+                    "no_of_msg"    => true,
+                    "receive_time" => true,
+                    "result"       => true,
+                ],
+            ],
+        ]);
+
+        $rows = $resp["data"]["listSMS"]["data"] ?? [];
+        foreach ($rows as &$row) {
+            $result = $row["result"] ?? "";
+            if (is_numeric($result)) {
+                $row["status"] = "Sent";
+            } else {
+                $row["status"] = ucwords(str_replace("_", " ", $result));
+            }
+            unset($row["result"]);
+        }
+        return $rows;
+    }
 }
