@@ -84,10 +84,10 @@ class EPost
                     "sms_id"         => true,
                     "phone"          => true,
                     "content"        => true,
-                    "created_time"   => true,
+                    "send_time"      => true,
                     "no_of_msg"      => true,
-                    "receive_status" => true,
                     "receive_time"   => true,
+                    "receive_status" => true,
                 ],
             ],
         ]);
